@@ -69,7 +69,9 @@ LINE 群組收到回覆（通報對象 + 歷史處理案例）
 | 畫面 | 截圖 |
 |---|---|
 | LINE Bot 問答 | ![LINE 對話](docs/images/line-chat.png) |
-| n8n Workflow B 畫布 | ![Workflow B](docs/images/workflow-b.png) |
+| Workflow B：LINE Bot 查詢（AI Agent + 向量工具） | ![Workflow B](docs/images/workflow-b.png) |
+| Workflow A1：通訊錄全量重建 | ![Workflow A1](docs/images/workflow-a1.png) |
+| Workflow A2：工作日誌增量寫入 | ![Workflow A2](docs/images/workflow-a2.png) |
 
 ## 成本
 

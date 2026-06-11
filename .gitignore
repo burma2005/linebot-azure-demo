@@ -11,3 +11,4 @@ Thumbs.db
 
 # redaction helper with local paths, do not publish
 tools/redact_screenshot.py
+tools/redact_workflows.py
