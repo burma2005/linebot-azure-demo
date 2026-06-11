@@ -1,0 +1,10 @@
+# 環境變數與金鑰
+.env
+*.env
+*.pem
+*.key
+
+# 雜項
+__pycache__/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>OP Bot 知識庫上傳</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft JhengHei", "Segoe UI", sans-serif; background: #f0f4f8; min-height: 100vh; padding: 24px; }
+  h1 { font-size: 22px; color: #1a365d; margin-bottom: 4px; }
+  .sub { color: #4a5568; font-size: 13px; margin-bottom: 20px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); overflow: hidden; }
+  .card header { display: flex; justify-content: space-between; align-items: center;
+                 padding: 12px 16px; color: #fff; }
+  .card.contacts header { background: #2b6cb0; }
+  .card.worklog  header { background: #2f855a; }
+  .card header h2 { font-size: 16px; }
+  .card header small { opacity: .85; font-size: 12px; }
+  .card button { border: 0; border-radius: 6px; padding: 6px 12px; font-size: 12px;
+                 cursor: pointer; background: rgba(255,255,255,.25); color: #fff; }
+  .card button:hover { background: rgba(255,255,255,.4); }
+  iframe { width: 100%; height: 560px; border: 0; display: block; background: #fafafa; }
+  .note { max-width: 1200px; margin-top: 16px; background: #fffbeb; border: 1px solid #f6e05e;
+          border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #744210; line-height: 1.7; }
+</style>
+</head>
+<body>
+  <h1>📚 OP Bot 知識庫上傳</h1>
+  <p class="sub">在下方對應區塊選擇檔案並送出，約 30~60 秒後知識庫自動更新完成。</p>
+
+  <div class="grid">
+    <div class="card contacts">
+      <header>
+        <div><h2>📇 通訊錄</h2><small>全量重建：以檔內最新「通訊錄YYYYMMDD」工作表為準</small></div>
+        <button onclick="document.getElementById('f1').src = document.getElementById('f1').src">↻ 再傳一次</button>
+      </header>
+      <iframe id="f1" src="https://YOUR-LABEL.japaneast.cloudapp.azure.com/form/FORM_A1_WEBHOOK_ID"></iframe>
+    </div>
+
+    <div class="card worklog">
+      <header>
+        <div><h2>📋 工作日誌</h2><small>增量更新：只寫入新的異常通報／資安事件，舊資料不重複</small></div>
+        <button onclick="document.getElementById('f2').src = document.getElementById('f2').src">↻ 再傳一次</button>
+      </header>
+      <iframe id="f2" src="https://YOUR-LABEL.japaneast.cloudapp.azure.com/form/FORM_A2_WEBHOOK_ID"></iframe>
+    </div>
+  </div>
+
+  <div class="note">
+    💡 檔案直接送入 n8n 解析，不會留存於雲端儲存體（無儲存費用）。
+    送出後若想確認結果：開 <a href="https://YOUR-LABEL.japaneast.cloudapp.azure.com" target="_blank">n8n</a> → Executions，
+    看最新一筆 A1／A2 是否為綠色 success。兩邊都要更新時，左右各傳一次即可。
+  </div>
+</body>
+</html>

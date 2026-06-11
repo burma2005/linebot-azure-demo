@@ -1,0 +1,53 @@
+#cloud-config
+write_files:
+  - path: /opt/op-bot/Caddyfile
+    content: |
+      YOUR-LABEL.japaneast.cloudapp.azure.com {
+          reverse_proxy n8n:5678
+      }
+  - path: /opt/op-bot/docker-compose.yml
+    content: |
+      services:
+        caddy:
+          image: caddy:2
+          ports:
+            - "80:80"
+            - "443:443"
+          volumes:
+            - /opt/op-bot/Caddyfile:/etc/caddy/Caddyfile
+            - caddy_data:/data
+          restart: unless-stopped
+
+        n8n:
+          image: n8nio/n8n
+          volumes:
+            - n8n_data:/home/node/.n8n
+          environment:
+            - N8N_HOST=YOUR-LABEL.japaneast.cloudapp.azure.com
+            - N8N_PORT=5678
+            - N8N_PROTOCOL=https
+            - WEBHOOK_URL=https://YOUR-LABEL.japaneast.cloudapp.azure.com
+          restart: unless-stopped
+
+        qdrant:
+          image: qdrant/qdrant
+          ports:
+            - "127.0.0.1:6333:6333"
+          volumes:
+            - qdrant_data:/qdrant/storage
+          restart: unless-stopped
+
+      volumes:
+        caddy_data:
+        n8n_data:
+        qdrant_data:
+runcmd:
+  - fallocate -l 2G /swapfile
+  - chmod 600 /swapfile
+  - mkswap /swapfile
+  - swapon /swapfile
+  - echo '/swapfile none swap sw 0 0' >> /etc/fstab
+  - apt-get update -y
+  - apt-get install -y docker.io docker-compose-v2
+  - systemctl enable --now docker
+  - cd /opt/op-bot && docker compose up -d
