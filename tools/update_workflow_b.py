@@ -16,7 +16,19 @@ LINE_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 JS_PARSE_LINE = r'''
 const b = $input.first().json.body || {};
 const ev = (b.events || [])[0] || {};
-return [{json: { type: ev.type || '', text: (ev.message && ev.message.text) || '', replyToken: ev.replyToken || '' }}];
+const msg = ev.message || {};
+const src = ev.source || {};
+let text = msg.text || '';
+const mentionees = (msg.mention && msg.mention.mentionees) || [];
+// 群組/聊天室只在被 @ 到機器人本人時回應；一對一私訊一律回應
+const mentionedMe = mentionees.some(m => m.isSelf === true);
+const shouldReply = src.type === 'user' || mentionedMe;
+// 把「@機器人名稱」從文字中移除（由後往前裁避免 index 位移）
+mentionees.filter(m => m.isSelf === true && typeof m.index === 'number')
+  .sort((a, b2) => b2.index - a.index)
+  .forEach(m => { text = text.slice(0, m.index) + text.slice(m.index + m.length); });
+return [{json: { type: ev.type || '', text: text.trim(), replyToken: ev.replyToken || '',
+                 shouldReply: shouldReply ? 'yes' : 'no' }}];
 '''
 
 JS_JOIN_CONTACTS = r'''
@@ -55,6 +67,8 @@ def if_msg():
                            "combinator": "and",
                            "conditions": [
                                {"leftValue": "={{ $json.type }}", "rightValue": "message",
+                                "operator": {"type": "string", "operation": "equals"}},
+                               {"leftValue": "={{ $json.shouldReply }}", "rightValue": "yes",
                                 "operator": {"type": "string", "operation": "equals"}},
                                {"leftValue": "={{ $json.text }}", "rightValue": "",
                                 "operator": {"type": "string", "operation": "notEmpty", "singleValue": True}},
